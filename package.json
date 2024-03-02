@@ -1,0 +1,19 @@
+{
+  "author": "author",
+  "description": "Super-power AmoCRM.",
+  "keywords": [
+    "amocrm",
+    "api"
+  ],
+  "license": "AGPL-3.0-only",
+  "main": "main.js",
+  "name": "amocrm-api",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/madliani/amocrm-api"
+  },
+  "scripts": {
+    "serve": "npx browser-sync start --port 8080 --server --ui-port 8000 --watch"
+  },
+  "version": "1.0.0"
+}
