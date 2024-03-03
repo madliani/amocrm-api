@@ -128,6 +128,19 @@ const fetchAllLeads = async (token) => {
   return data;
 };
 
+const lengthChange = async (table, length, accessToken) => {
+  let data = [];
+
+  if (length === -1) {
+    data = await fetchAllLeads(accessToken);
+  } else {
+    data = await fetchLeads(accessToken, 1, length);
+  }
+
+  table.clear();
+  table.rows.add(data).draw();
+};
+
 window.onload = async () => {
   const columns = [
     { title: "Название" },
@@ -149,7 +162,6 @@ window.onload = async () => {
     "def50200e132fc893b01defbbfe64bfe6884ddbda2c08ab383c6238beb8acf6d9fa0b8ddc8745bf3edbace8951cc598f683a8eec6d052f2f3baf5e1c1a5bc742e36c7a9a3c00a6d3ef2ac42895ca94df5c8aa18bd0c0b012737875dd78d2cc37b4dd848477b5cb8cf4283357d1331758eb50f5c84b41ad09dd8a7dab1381e6362e4112927ef072e69a6b575aa0138ff207015aa7f43a8258d42715e46fdf4bf86909c8b81d7ec371a4a6f4ab1c486ec50d6c229c5239c8ef81dcdec997a369248c3409d48642f9506a59ce2a4e4c93bba8848336167327300309aa3013ad950abaaa4cbc679aa7895ccb97c970ae2c3da2aca62732170d0ebdfb57965630c4d38a2067836d8e682c46baff939f11c771787ca23f829374ca13705035279b293d6d3834f7bfd4921cfa25764eeb8936122fcab97c76ea37495f83037864b153ef04d88478184550dfc5fa9a58d730a12caa581932ba87523816a0e9bc87d0b868e2ff793508590b467b808175f113eea5f1508eedfb1a716acb24dd0d238991846edce4bdc94078d6c05267996a7b506cccd07b0c7b08a3b3d35ccc71b578618c52da185e03f64c5a9fb41ce59e2fe64146c0";
 
   const { accessToken } = await fetchJWT(refreshToken);
-
   const data = await fetchAllLeads(accessToken);
 
   const url = "https://cdn.datatables.net/plug-ins/2.0.1/i18n/ru.json";
@@ -159,7 +171,6 @@ window.onload = async () => {
   };
 
   const lengthMenu = [{ label: "Все", value: -1 }, 2, 5, 10];
-
   const ordering = false;
 
   const table = $("#table").DataTable({
@@ -170,16 +181,9 @@ window.onload = async () => {
     ordering,
   });
 
-  table.on("length", async (_event, _settings, length) => {
-    let data = [];
-
-    if (length === -1) {
-      data = await fetchAllLeads(accessToken);
-    } else {
-      data = await fetchLeads(accessToken, 1, length);
-    }
-
-    table.clear();
-    table.rows.add(data).draw();
-  });
+  table.on(
+    "length",
+    async (_event, _settings, length) =>
+      await lengthChange(table, length, accessToken)
+  );
 };
