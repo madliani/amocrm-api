@@ -51,10 +51,9 @@ const fetchLead = async ({
   return [name, price, createdAt, updatedAt, responsibleUser?.name];
 };
 
-const fetchLeads = async () => {
+const fetchLeads = async (page = 1, limit = 250) => {
   const proxyUrl = "https://corsproxy.io/?";
-  const apiUrl =
-    "https://madliani.amocrm.ru/api/v4/leads?order[name]=asc&order[price]=asc";
+  const apiUrl = `https://madliani.amocrm.ru/api/v4/leads?order[name]=asc&order[price]=asc&page=${page}&limit=${limit}`;
   const url = proxyUrl + encodeURIComponent(apiUrl);
 
   const request = new Request(url, {
@@ -64,8 +63,7 @@ const fetchLeads = async () => {
   });
 
   try {
-    const throttledFetch = _.throttle(fetch, 2000);
-    const response = await throttledFetch(request);
+    const response = await fetch(request);
     const json = await response.json();
     const { leads } = json["_embedded"];
 
@@ -79,6 +77,23 @@ const fetchLeads = async () => {
   }
 
   return [];
+};
+
+const fetchAllLeads = async () => {
+  let chunk = [];
+  let data = [];
+  let page = 1;
+
+  do {
+    const throttledAFetchLeads = _.throttle(fetchLeads, 2_000);
+
+    chunk = await throttledAFetchLeads(page, 5);
+    data = [...data, ...chunk];
+
+    page++;
+  } while (chunk.length);
+
+  return data;
 };
 
 window.onload = async () => {
@@ -98,7 +113,7 @@ window.onload = async () => {
     },
   ];
 
-  const data = await fetchLeads();
+  const data = await fetchAllLeads();
 
   const url = "https://cdn.datatables.net/plug-ins/2.0.1/i18n/ru.json";
 
@@ -106,12 +121,28 @@ window.onload = async () => {
     url,
   };
 
+  const lengthMenu = [{ label: "Все", value: -1 }, 2, 5, 10];
+
   const ordering = false;
 
-  $("#table").DataTable({
+  const table = $("#table").DataTable({
     columns,
     data,
     language,
+    lengthMenu,
     ordering,
+  });
+
+  table.on("length", async (_event, _settings, length) => {
+    let data = [];
+
+    if (length === -1) {
+      data = await fetchAllLeads();
+    } else {
+      data = await fetchLeads(1, length);
+    }
+
+    table.clear();
+    table.rows.add(data).draw();
   });
 };
