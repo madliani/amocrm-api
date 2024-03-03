@@ -52,7 +52,8 @@ const fetchLead = async ({
 
 const fetchLeads = async () => {
   const proxyUrl = "https://corsproxy.io/?";
-  const apiUrl = "https://madliani.amocrm.ru/api/v4/leads";
+  const apiUrl =
+    "https://madliani.amocrm.ru/api/v4/leads?order[name]=asc&order[price]=asc";
   const url = proxyUrl + encodeURIComponent(apiUrl);
 
   const request = new Request(url, {
@@ -104,9 +105,12 @@ window.onload = async () => {
     url,
   };
 
+  const ordering = false;
+
   $("#table").DataTable({
     columns,
     data,
     language,
+    ordering,
   });
 };
