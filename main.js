@@ -117,9 +117,9 @@ const fetchAllLeads = async (token) => {
   let page = 1;
 
   do {
-    const throttledAFetchLeads = _.throttle(fetchLeads, 2_000);
+    const throttledFetchLeads = _.throttle(fetchLeads, 2_000);
 
-    chunk = await throttledAFetchLeads(token, page, 5);
+    chunk = await throttledFetchLeads(token, page, 5);
     data = [...data, ...chunk];
 
     page++;
