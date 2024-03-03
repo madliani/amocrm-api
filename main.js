@@ -9,7 +9,7 @@ const fetchLeads = async () => {
   });
 
   const proxyURL = "https://corsproxy.io/?";
-  const apiURL = "https://madliani.amocrm.ru/api/v4/leads";
+  const apiURL = "https://madliani.amocrm.ru/api/v4/leads?limit=5";
   const url = proxyURL + encodeURIComponent(apiURL);
 
   const request = new Request(url, {
@@ -18,30 +18,36 @@ const fetchLeads = async () => {
     method: "GET",
   });
 
-  let data = [];
-
   try {
     const response = await fetch(request);
     const json = await response.json();
     const { leads } = json["_embedded"];
 
-    data = leads.map(({ name, price, created_at, updated_at }) => {
-      const createdAt = new Intl.DateTimeFormat("ru-RU", {
+    const data = leads.map(({ name, price, created_at, updated_at }) => {
+      const locale = "ru-RU";
+
+      const options = {
         dateStyle: "short",
         timeStyle: "short",
-      }).format(new Date(created_at));
-      const updatedAt = new Intl.DateTimeFormat("ru-RU", {
-        dateStyle: "short",
-        timeStyle: "short",
-      }).format(new Date(updated_at));
+      };
+
+      const createdAt = new Intl.DateTimeFormat(locale, options).format(
+        new Date(created_at)
+      );
+
+      const updatedAt = new Intl.DateTimeFormat(locale, options).format(
+        new Date(updated_at)
+      );
 
       return [name, price, createdAt, updatedAt, null];
     });
+
+    return data;
   } catch (exception) {
     console.error(exception);
   }
 
-  return data;
+  return [];
 };
 
 window.onload = async () => {
