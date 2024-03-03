@@ -9,7 +9,7 @@ const fetchLeads = async () => {
   });
 
   const proxyUrl = "https://corsproxy.io/?";
-  const apiUrl = "https://madliani.amocrm.ru/api/v4/leads?page=1";
+  const apiUrl = "https://madliani.amocrm.ru/api/v4/leads";
   const url = proxyUrl + encodeURIComponent(apiUrl);
 
   const request = new Request(url, {
