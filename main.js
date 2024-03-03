@@ -8,9 +8,9 @@ const fetchLeads = async () => {
     Authorization: `Bearer ${token}`,
   });
 
-  const proxyURL = "https://corsproxy.io/?";
-  const apiURL = "https://madliani.amocrm.ru/api/v4/leads?limit=5";
-  const url = proxyURL + encodeURIComponent(apiURL);
+  const proxyUrl = "https://corsproxy.io/?";
+  const apiUrl = "https://madliani.amocrm.ru/api/v4/leads?page=1";
+  const url = proxyUrl + encodeURIComponent(apiUrl);
 
   const request = new Request(url, {
     credentials: "omit",
